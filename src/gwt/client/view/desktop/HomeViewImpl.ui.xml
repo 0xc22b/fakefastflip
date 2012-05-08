@@ -1,0 +1,88 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:style type='gwt.client.view.desktop.HomeViewImpl.Style'>
+        .panel {
+            margin: 30px auto;
+            width: 920px;
+        }
+        
+        .h1 {
+            font-size: 30px;
+        }
+        
+        .slogan {
+            color: #333;
+        }
+        
+        .rssInputs {
+            margin: 30px auto;
+            width: 560px;
+        }
+        
+        .rssTB {
+            border: 1px solid #000000;
+            height: 24px;
+            width: 480px;
+            padding: 1px 2px;
+        }
+        
+        .btn {
+            font-size: 13px;
+            color: #000;
+            background-color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid #000;
+            padding: 4px 10px 5px;
+        }
+        
+        .rssBtn {
+            margin: 0 0 0 7px;
+        }
+        
+        .errAddRuleLb {
+            color: red;
+        }
+        
+        .h2 {
+            margin: 30px 0 15px;
+        }
+        
+        .a {
+            display: block;
+            margin: 5px 60px;
+        }
+        
+        .ruleBtn {
+            margin: 15px 0;
+        }
+    </ui:style>
+
+    <g:HTMLPanel styleName='{style.panel}'>
+        <h1 class='{style.h1}'>Fake Fastflip</h1>
+        <h6 class='{style.slogan}'>It's fake 'cause it's not fast.</h6>
+        <div class='{style.rssInputs}'>
+            <g:Label ui:field='errRssLb' styleName='{style.errAddRuleLb}'></g:Label>
+            <g:TextBox ui:field="rssTB" styleName='{style.rssTB}'></g:TextBox>
+            <g:Button ui:field="rssBtn" styleName='{style.btn} {style.rssBtn}'>Next</g:Button>
+        </div>
+        <p>Do you miss Google Fastflip? Here's the fake one. Try the RSS links below.</p>
+        <h2 class='{style.h2}'>Suggestions RSS</h2>
+        <a href="#FastFlipPlace:http://www.hnsearch.com/rss" class='{style.a}'>RSS Ycombinator news</a>
+        <a href="#FastFlipPlace:http://news.google.com/news?ned=us&amp;topic=h&amp;output=rss" class='{style.a}'>Google news: Top news</a>
+        <a href="#FastFlipPlace:http://news.google.com/news?ned=us&amp;topic=w&amp;output=rss" class='{style.a}'>Google news: World</a>
+        <a href="#FastFlipPlace:http://news.google.com/news?ned=us&amp;topic=n&amp;output=rss" class='{style.a}'>Google news: US</a>
+        <a href="#FastFlipPlace:http://news.google.com/news?ned=us&amp;topic=b&amp;output=rss" class='{style.a}'>Google news: Business</a>
+        <a href="#FastFlipPlace:http://news.google.com/news?pz=1&amp;cf=all&amp;ned=us&amp;hl=en&amp;topic=tc&amp;output=rss" class='{style.a}'>Google news: Technology</a>
+        <a href="#FastFlipPlace:http://news.google.com/news?ned=us&amp;topic=m&amp;output=rss" class='{style.a}'>Google news: Health</a>
+        <a href="#FastFlipPlace:http://news.google.com/news?ned=us&amp;topic=s&amp;output=rss" class='{style.a}'>Google news: Sports</a>
+        <a href="#FastFlipPlace:http://news.google.com/news?ned=us&amp;topic=e&amp;output=rss" class='{style.a}'>Google news: Entertainment</a>
+        <a href="#FastFlipPlace:http://news.google.com/news?pz=1&amp;cf=all&amp;ned=us&amp;hl=en&amp;topic=snc&amp;output=rss" class='{style.a}'>Google news: Science</a>
+        <h2 class='{style.h2}'>No allowed in iFrame websites</h2>
+        <p>
+            Some website don't allow to be embedded within an iFrame. 
+            Respect their decisions, add their names to click the links to open their websites instead.
+        </p>
+        <g:Button ui:field="ruleBtn" styleName='{style.btn} {style.ruleBtn}'>Add no-allowed-in-iFrame websites</g:Button>
+    </g:HTMLPanel>
+</ui:UiBinder>

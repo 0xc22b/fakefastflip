@@ -1,0 +1,146 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' 
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:c='urn:import:gwt.client.ui'>
+
+    <ui:style type='gwt.client.view.desktop.FastFlipViewImpl.Style'>
+        
+        .panel {
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+        
+        .header {
+            position: fixed;
+            height: 37px;
+            width: 100%;
+            margin: 0;
+            padding: 3px 80px;
+            overflow: hidden;
+            z-index: 1;
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+        }
+        
+        .pageLb {
+            position: absolute;
+            top: 7px;
+            left: 20px;
+        }
+        
+        .anchorDiv {
+	       display: table;
+	       width: 100%;
+	       height: 100%;
+	    }
+        
+        .anchor {
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle;
+            overflow: hidden;
+        }
+        
+        .backBtn {
+            display: block;
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            height: 27px;
+            font-size: 13px;
+            color: #000;
+            background-color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid #000;
+            padding: 4px 10px 5px;
+        }
+        
+        .main {
+            position: relative;
+            height: 99%;
+            margin: 0;
+            padding: 37px 0 0 0;
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+        }
+        
+        .iFrame {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            border: 0;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+        }
+        
+        .current {
+
+        }
+        
+        .next {
+            display: none;
+        }
+        
+        .far {
+            display: none;
+        }
+        
+        .fartest {
+            display: none;
+        }
+        
+        .btn {
+            display: block;
+            position: fixed;
+            top: 37px;
+            height: 100%;
+            width: 70px;
+            z-index: 9;
+            font-size: 13px;
+            color: #FFF;
+            background-color: #000;
+            opacity: 0.7;
+            font-weight: bold;
+            cursor: pointer;
+            border: 0;
+        }
+        
+        .leftBtn {
+            left: 0;
+        }
+        
+        .hideLeftBtn {
+            left: -69px;
+        }
+        
+        .rightBtn {
+            right: 0;
+        }
+        
+        .hideRightBtn {
+            right: -69px;
+        }
+    </ui:style>
+
+    <g:HTMLPanel styleName="{style.panel}">
+        <div class='{style.header}'>
+            <g:Label ui:field="pageLb" styleName="{style.pageLb}" ></g:Label>
+            <div class='{style.anchorDiv}'>
+                <g:Anchor ui:field="anchor" styleName="{style.anchor}" ></g:Anchor>
+            </div>
+            <g:Button ui:field="backBtn" styleName="{style.backBtn}" >Back</g:Button>
+        </div>
+        <div class='{style.main}'>
+            <c:CustomFrame ui:field="iFrame1"></c:CustomFrame>
+            <c:CustomFrame ui:field="iFrame2"></c:CustomFrame>
+            <c:CustomFrame ui:field="iFrame3"></c:CustomFrame>
+            <c:CustomFrame ui:field="iFrame4"></c:CustomFrame>
+        </div>
+        <g:Button ui:field="prevBtn" styleName="{style.btn} {style.leftBtn}">&lt;&lt;</g:Button>
+        <g:Button ui:field="nextBtn" styleName="{style.btn} {style.rightBtn}">&gt;&gt;</g:Button>
+    </g:HTMLPanel>
+</ui:UiBinder>

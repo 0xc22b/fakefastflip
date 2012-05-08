@@ -1,0 +1,93 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:style type='gwt.client.view.desktop.RuleViewImpl.Style'>
+        .panel {
+        	position: relative;
+        	margin: 30px auto;
+        	width: 920px;
+        	min-height: 100%;
+        }
+        
+        .h1 {
+        	font-size: 30px;
+        }
+        
+        .slogan {
+        	color: #333;
+        }
+        
+        .rssInputs {
+        	margin: 30px auto;
+        	width: 625px;
+        }
+        
+        .commLB {
+        	border: 1px solid #000000;
+        	width: 155px;
+        	padding: 4px 2px;
+        }
+        
+        .rssTB {
+        	border: 1px solid #000000;
+        	height: 24px;
+        	width: 400px;
+        	padding: 1px 2px;
+        }
+        
+        .btn {
+        	font-size: 13px;
+        	color: #000;
+        	background-color: white;
+        	font-weight: bold;
+        	cursor: pointer;
+        	border: 1px solid #000;
+        	padding: 4px 10px 5px;
+        }
+        
+        .backBtn {
+        	position: absolute;
+        	top: 0;
+        	right: 0;
+        }
+        
+        .errAddRuleLb {
+        	color: red;
+        }
+        
+        .h2 {
+            margin: 30px 0 15px;
+        }
+        
+        .item {
+            display: table;
+            margin: 5px 60px;
+        }
+        
+        .rule {
+            display: table-cell;
+            
+        }
+        
+        .delBtn {
+            display: table-cell;
+            margin: 0 0 0 20px;
+            background-color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: 0;
+        }
+    </ui:style>
+
+    <g:HTMLPanel styleName='{style.panel}'>
+        <h1 class='{style.h1}'>No-allowed-in-iFrame websites</h1>
+        <g:Button ui:field='backBtn' styleName='{style.btn} {style.backBtn}'>Back</g:Button>
+        <div class='{style.rssInputs}'>
+            <g:Label ui:field='errAddRuleLb' styleName='{style.errAddRuleLb}'></g:Label>
+            <g:ListBox ui:field='commLB' styleName='{style.commLB}'></g:ListBox>
+            <g:TextBox ui:field='argTB' styleName='{style.rssTB}'></g:TextBox>
+            <g:Button ui:field='addRuleBtn' styleName='{style.btn}'>Add</g:Button>
+        </div>
+        <h2 class='{style.h2}'>List</h2>
+        <g:FlowPanel ui:field='rulePanel'></g:FlowPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>
