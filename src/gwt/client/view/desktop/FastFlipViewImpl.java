@@ -4,6 +4,8 @@ import gwt.client.ui.CustomFrame;
 import gwt.client.view.FastFlipView;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -12,6 +14,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
@@ -124,6 +127,8 @@ public class FastFlipViewImpl extends Composite implements FastFlipView {
         
         this.total = total;
         updateHeader(index, iFrame1.getHUrl());
+        
+        setCurrentFrameFocus();
     }
     
     @Override
@@ -132,6 +137,7 @@ public class FastFlipViewImpl extends Composite implements FastFlipView {
         nextIFrame(iFrame2, index, link, hLink);
         nextIFrame(iFrame3, index, link, hLink);
         nextIFrame(iFrame4, index, link, hLink);
+        setCurrentFrameFocus();
     }
     
     @Override
@@ -140,6 +146,7 @@ public class FastFlipViewImpl extends Composite implements FastFlipView {
         prevIFrame(iFrame2, index, link, hLink);
         prevIFrame(iFrame3, index, link, hLink);
         prevIFrame(iFrame4, index, link, hLink);
+        setCurrentFrameFocus();
     }
     
     private void nextIFrame(final CustomFrame frame, int index, String link, String hLink){
@@ -224,5 +231,26 @@ public class FastFlipViewImpl extends Composite implements FastFlipView {
         pageLb.setText( (index + 1) + "/" + total);
     }
     
+    private void setCurrentFrameFocus(){
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute() {
+                if(iFrame1.getStyleName().contains(style.current())){
+                    setFrameFocus(iFrame1.getElement());
+                }else if(iFrame2.getStyleName().contains(style.current())){
+                    setFrameFocus(iFrame2.getElement());
+                }else if(iFrame3.getStyleName().contains(style.current())){
+                    setFrameFocus(iFrame3.getElement());
+                }else if(iFrame4.getStyleName().contains(style.current())){
+                    setFrameFocus(iFrame4.getElement());
+                }else{
+                    throw new AssertionError();
+                }
+            }
+        });
+    }
     
+    private native void setFrameFocus(Element frame) /*-{
+        frame.contentWindow.focus();
+    }-*/;
 }
