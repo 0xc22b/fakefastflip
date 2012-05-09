@@ -11,3 +11,8 @@ http://fakefastflip.appspot.com/
 * Only title and description are not enough.
 * Love to see the whole.
 * Like to skim.
+
+## Platforms
+
+* GWT
+* Java App Engine
