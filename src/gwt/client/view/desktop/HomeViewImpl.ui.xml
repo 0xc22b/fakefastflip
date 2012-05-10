@@ -59,6 +59,11 @@
     </ui:style>
 
     <g:HTMLPanel styleName='{style.panel}'>
+        <a href="https://github.com/witnapatat/fakefastflip">
+            <img style="position: absolute; top: 0; right: 0; border: 0;" 
+                 src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" 
+                 alt="Fork me on GitHub" />
+        </a>
         <h1 class='{style.h1}'>Fake Fastflip</h1>
         <h6 class='{style.slogan}'>It's fake 'cause it's not fast.</h6>
         <div class='{style.rssInputs}'>
