@@ -201,7 +201,7 @@ public class FastFlipActivity extends AbstractActivity implements FastFlipView.P
         
         for(SRule sRule : ruleList){
             if(sRule.getComm().equals(Comm.NoAllowedInIFrame)){
-                if(link.contains(sRule.getArg())){
+                if(link.toLowerCase().contains(sRule.getArg().toLowerCase())){
                     l = blankLink;
                 }
             }
