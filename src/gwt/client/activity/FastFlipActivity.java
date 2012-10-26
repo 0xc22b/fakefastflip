@@ -14,7 +14,6 @@ import gwt.shared.model.SRule.Comm;
 
 import com.google.gwt.activity.shared.AbstractActivity;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
@@ -27,12 +26,23 @@ import com.google.gwt.xml.client.XMLParser;
 
 public class FastFlipActivity extends AbstractActivity implements FastFlipView.Presenter {
 
+    public static class RssItem {
+
+        public String link;
+        public String title;
+
+        public RssItem(String link, String title) {
+            this.link = link;
+            this.title = title;
+        }
+    }
+    
     private static final String blankLink = "/blank";
     
     private ClientFactory clientFactory;
     private FastFlipPlace place;
     
-    private List<String> linkList;
+    private List<RssItem> rssItemList;
     private List<SRule> ruleList;
     private int index;
     
@@ -63,40 +73,35 @@ public class FastFlipActivity extends AbstractActivity implements FastFlipView.P
     }
     
     @Override
-    public void back() {
+    public void onBackBtnClicked() {
         clientFactory.getPlaceController().goTo(new HomePlace());
     }
     
     @Override
-    public void next(){
-        if(linkList == null){
+    public void onNextBtnClicked(){
+        if(rssItemList == null){
             return;
         }
         
-        if(index + 1 < linkList.size()){
+        if(index + 1 < rssItemList.size()){
             index += 1;
             
-            String hLink = index + 2 < linkList.size() ? linkList.get(index + 2) : blankLink;
-            String link =  hLink.equals(blankLink) ? blankLink : applyRule(hLink);
-            clientFactory.getFastFlipView().next(index, link, hLink);
+            String[] derivedLink = deriveLink(index + 2);
+            clientFactory.getFastFlipView().next(index, derivedLink[0],
+                    derivedLink[1], derivedLink[2]);
         }
     }
     
     @Override
-    public void prev(){
-        if(linkList == null){
-            return;
-        }
-        
-        if(index - 1 >= 0){
-            index -= 1;
-            
-            String hLink = linkList.get(index);
-            String link = applyRule(linkList.get(index));
-            clientFactory.getFastFlipView().prev(index, link, hLink);
-        }
+    public void onTitleListBtnClicked() {
+        clientFactory.getFastFlipView().showTitleList(getTitleList(), index);
     }
 
+    @Override
+    public void onTitleListItemSelected(int index) {
+        setFrames(index);
+    }
+    
     private void fetchRssFeed(){
         String rssUrl = place.getToken();
         
@@ -115,8 +120,8 @@ public class FastFlipActivity extends AbstractActivity implements FastFlipView.P
             @Override
             public void onSuccess(SFFF result) {
                 
-                linkList = extractLinks(result.getRss());
-                if(linkList.isEmpty()){
+                rssItemList = extractLinks(result.getRss());
+                if(rssItemList.isEmpty()){
                     Window.alert("No news from this feed. Going back...");
                     clientFactory.getPlaceController().goTo(new HomePlace());
                     return;
@@ -124,81 +129,70 @@ public class FastFlipActivity extends AbstractActivity implements FastFlipView.P
                 
                 ruleList = result.getSRuleList();
                 
-                initializeFrame();
+                setFrames(0);
             }
         });
-        
-        //Special treat for YCombinator news
-        /*if(rssUrl.equals("http://news.ycombinator.com/rss")){
-            JsonRequest.get("http://api.ihackernews.com/page?format=jsonp&callback=", new JsonRequest.JsonRequestHandler(){
-                @Override
-                public void onRequestComplete(JavaScriptObject json) {
-                    if(json==null){
-                        // TODO
-                        // Couldn't connect to server (could be timeout, SOP violation, etc.)
-                        Window.alert("Couldn't get JSON data from ihackernews API. Going back...");
-                        clientFactory.getPlaceController().goTo(new HomePlace());
-                        return;
-                    }
-                    ArrayList<String> linkList = extractLinks(json);
-                    //applyRules(linkList);
-                    
-                    if(linkList.isEmpty()){
-                        Window.alert("No news from this feed. Going back...");
-                        clientFactory.getPlaceController().goTo(new HomePlace());
-                    }
-                    
-                    clientFactory.getFastFlipView().setFlip(linkList);
-                }
-            });
-            return;
-        }*/
     }
     
-    private void initializeFrame(){
-        assert linkList != null && linkList.size() > 0;
+    private void setFrames(int index){
+        assert rssItemList != null && rssItemList.size() > index;
         
-        index = 0;
-        int size = linkList.size();
-        String hLink1 = linkList.get(0);
-        String link1 = applyRule(hLink1);
-        String hLink2 = size > 1 ? linkList.get(1) : blankLink;
-        String link2 = applyRule(hLink2);
-        String hLink3 = size > 2 ? linkList.get(2) : blankLink;
-        String link3 = applyRule(hLink3);
-        clientFactory.getFastFlipView().setFrames(index, link1, hLink1, link2, hLink2, link3, hLink3, linkList.size());
+        this.index = index;
+        
+        String[] derivedLink1 = deriveLink(index); 
+        String[] derivedLink2 = deriveLink(index + 1);
+        String[] derivedLink3 = deriveLink(index + 2);
+        clientFactory.getFastFlipView().setFrames(index,
+                derivedLink1[0], derivedLink1[1], derivedLink1[2],
+                derivedLink2[0], derivedLink2[1], derivedLink2[2],
+                derivedLink3[0], derivedLink3[1], derivedLink3[2],
+                rssItemList.size());
     }
     
-    private ArrayList<String> extractLinks(String rssXml){
-        ArrayList<String> linkList = new ArrayList<String>();
+    private String[] deriveLink(int index) {
+        String link = rssItemList.size() > index ? rssItemList.get(index).link : "";
+        String title = link.isEmpty() ? "" : rssItemList.get(index).title;
+        String ruleLink = link.isEmpty() ? blankLink : applyRule(link);
+        return new String[]{link, title, ruleLink};
+    }
+    
+    private ArrayList<RssItem> extractLinks(String rssXml){
+        String link;
+        String title;
+        ArrayList<RssItem> rssItemList = new ArrayList<RssItem>();
         try{
             // parse the XML document into a DOM
             Document rssDom = XMLParser.parse(rssXml);
             NodeList itemList = rssDom.getElementsByTagName("item");
             for(int i=0; i<itemList.getLength(); i++){
+                link = null;
+                title = null;
                 Node item = itemList.item(i);
                 NodeList childNode = item.getChildNodes();
                 for(int j=0; j<childNode.getLength(); j++){
                     Node child = childNode.item(j); 
                     if(child.getNodeName().equals("link")){
                         Text linkNode = (Text)child.getFirstChild();
-                        String link = linkNode.getData();
-                        if(link != null && !link.isEmpty()){
-                            linkList.add(link);
-                        }
+                        link = linkNode.getData();
                     }
+                    if(child.getNodeName().equals("title")){
+                        Text titleNode = (Text)child.getFirstChild();
+                        title = titleNode.getData();
+                    }
+                }
+                if ((link != null && !link.isEmpty())) {
+                    rssItemList.add(new RssItem(link, title));
                 }
             }
         } catch (DOMException e) {
             Window.alert(e.getMessage() + ": " + e.getCause());
             clientFactory.getPlaceController().goTo(new HomePlace());
         }
-        return linkList;
+        return rssItemList;
     }
     
     private String applyRule(String link){
         String l = link;
-        
         for(SRule sRule : ruleList){
             if(sRule.getComm().equals(Comm.NoAllowedInIFrame)){
                 if(link.toLowerCase().contains(sRule.getArg().toLowerCase())){
@@ -206,33 +200,14 @@ public class FastFlipActivity extends AbstractActivity implements FastFlipView.P
                 }
             }
         }
-        
         return l;
     }
     
-    private static native Element getBody() /*-{ 
-        return $doc.body; 
-    }-*/;
-    
-    /*private ArrayList<String> extractLinks(JavaScriptObject json){
-        ArrayList<String> linkList = new ArrayList<String>();
-        IYCombinatorInfo yComInfo = json.cast();
-        for(int i=0; i<yComInfo.getLinkSize(); i++){
-            linkList.add(yComInfo.getLink(i));
+    private ArrayList<String> getTitleList() {
+        ArrayList<String> titleList = new ArrayList<String>();
+        for (RssItem rssItem : rssItemList) {
+            titleList.add(rssItem.title);
         }
-        return linkList;
-    }*/
-    
-    /*private void applyRules(ArrayList<String> linkList){
-        for(int i=0; i<linkList.size(); i++){
-            if(linkList.get(i).contains("www.nytimes.com")){
-                linkList.remove(i);
-                i -= 1;
-                continue;
-            }
-        }
-    }*/
-    
-    
-    
+        return titleList;
+    }
 }

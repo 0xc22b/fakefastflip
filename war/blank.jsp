@@ -15,7 +15,7 @@
 			
             #noFrame {
                 text-align: center;
-                padding-top: 15%;
+                padding-top: 20%;
             }
         </style>
     </head>

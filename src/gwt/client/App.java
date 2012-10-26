@@ -47,7 +47,7 @@ public class App {
 
     public void run(HasWidgets.ForIsWidget parentView) {
         
-        //TODO: Check for authentication failures or mismatches
+        // Check for authentication failures or mismatches
         //reloadOnAuthenticationFailure.register(eventBus);
         
         // Define style in Fakefastflip.css
@@ -56,7 +56,7 @@ public class App {
         activityManager.setDisplay(shell);
         parentView.add(shell);
 
-        /*GWT.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+        GWT.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
             @Override
             public void onUncaughtException(Throwable e) {
                 while (e instanceof UmbrellaException) {
@@ -70,7 +70,7 @@ public class App {
                 log.log(Level.SEVERE, "Uncaught exception", e);
                 Window.alert("An unexpected error occurred: " + message);
             }
-        });*/
+        });
 
         Place savedPlace = null;
         /*if (storage != null) {
