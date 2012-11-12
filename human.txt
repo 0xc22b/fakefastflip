@@ -1,5 +1,5 @@
 FakeFastflip is written by:
-  Wit Napatat
+  Wit Thanawitchayakarn
 
 With help from many libraries and frameworks including:
   GWT
