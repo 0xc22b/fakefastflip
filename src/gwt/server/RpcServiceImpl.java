@@ -1,25 +1,28 @@
 package gwt.server;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.util.List;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-
+import static com.google.appengine.api.urlfetch.FetchOptions.Builder.allowTruncate;
 import gwt.client.RpcService;
 import gwt.server.model.Rule;
+import gwt.server.model.RuleGrp;
 import gwt.shared.FetchUrlException;
 import gwt.shared.FieldVerifier;
 import gwt.shared.model.SFFF;
 import gwt.shared.model.SRule;
 
-import static com.google.appengine.api.urlfetch.FetchOptions.Builder.*;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.urlfetch.HTTPMethod;
 import com.google.appengine.api.urlfetch.HTTPRequest;
 import com.google.appengine.api.urlfetch.HTTPResponse;
@@ -82,36 +85,45 @@ public class RpcServiceImpl extends RemoteServiceServlet implements RpcService {
 
     @Override
     public String addRule(SRule sRule) {
-        PersistenceManager pm = PMF.get().getPersistenceManager();
-        Rule rule = new Rule(sRule.getComm(), sRule.getArg());
-        pm.makePersistent(rule);
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        Rule rule = new Rule(getRuleGrpKey(), sRule.getComm(), sRule.getArg());
+        ds.put(rule.getEntity());
         return rule.getKeyString();
     }
 
     @Override
     public String deleteRule(String keyString) {
-        PersistenceManager pm = PMF.get().getPersistenceManager();
-        //try{
         Key key = KeyFactory.stringToKey(keyString);
-        Rule rule = pm.getObjectById(Rule.class, key);
-        pm.deletePersistent(rule);
-        return rule.getKeyString();
-        /*} catch(IllegalArgumentException e){
-            
-        } catch(JDOObjectNotFoundException e) {
-            
-        }*/
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        ds.delete(key);
+        return keyString;
     }
 
     private List<Rule> getRuleList(){
-        PersistenceManager pm = PMF.get().getPersistenceManager();
-        Query query = pm.newQuery(Rule.class);
-        try {
-            @SuppressWarnings("unchecked")
-            List<Rule> ruleList = (List<Rule>)query.execute();
-            return ruleList;
-        } finally {
-            query.closeAll();
+        List<Rule> ruleList = new ArrayList<Rule>();
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        Query query = new Query(Rule.class.getSimpleName());
+        // Using ancestor query to get strongly consistent results.
+        // https://developers.google.com/appengine/docs/java/datastore/overview#Queries_and_Indexes
+        query.setAncestor(getRuleGrpKey());
+        Iterator<Entity> iterator = ds.prepare(query).asIterator();
+        while(iterator.hasNext()){
+            Entity entity = iterator.next();
+            Rule rule = new Rule(entity);
+            ruleList.add(rule);
         }
+        return ruleList;
+    }
+    
+    private static Key ruleGrpKey;
+    
+    private static Key getRuleGrpKey() {
+        if (ruleGrpKey == null) {
+            DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+            RuleGrp userGrp = new RuleGrp();
+            ds.put(userGrp.getEntity());
+            ruleGrpKey = userGrp.getEntity().getKey();
+        }
+        return ruleGrpKey;
     }
 }

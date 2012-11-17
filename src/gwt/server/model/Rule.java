@@ -2,46 +2,47 @@ package gwt.server.model;
 
 import gwt.shared.model.SRule.Comm;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
-
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
-@PersistenceCapable
 public class Rule {
 
-    @PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    private Key key;
-
-    @Persistent
-    private Comm comm;
+    public static final String COMM = "comm";
+    public static final String ARG = "arg";
     
-    @Persistent
-    private String arg;
+    private Entity entity;
 
-    public Rule(Comm comm, String arg) {
-        this.comm = comm;
-        this.arg = arg;
+    public Rule(Key ruleGrpKey, Comm comm, String arg) {
+        entity = new Entity(Rule.class.getSimpleName(), ruleGrpKey);
+        entity.setProperty(COMM, comm.name());
+        entity.setProperty(ARG, arg);
+    }
+    
+    public Rule(Entity entity) {
+        if (entity == null) {
+            throw new IllegalArgumentException();
+        }
+        this.entity = entity;
+    }
+    
+    public Entity getEntity() {
+        return entity;
     }
 
     public Key getKey() {
-        return key;
+        return entity.getKey();
     }
     
     public String getKeyString(){
-        return KeyFactory.keyToString(key);
+        return KeyFactory.keyToString(entity.getKey());
     }
 
     public Comm getComm() {
-        return comm;
+        return Comm.valueOf((String)entity.getProperty(COMM));
     }
 
     public String getArg() {
-        return arg;
+        return (String)entity.getProperty(ARG);
     }
-
 }
