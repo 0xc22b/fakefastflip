@@ -143,7 +143,7 @@ public class FastFlipViewImpl extends Composite implements FastFlipView {
         iFrame4.setStyleName(style.iFrame() + " " + style.fartest());
         
         this.total = total;
-        updateHeader(index, iFrame1.getUrl(), iFrame1.getCustomTitle());
+        updateHeader(index, iFrame1.getCustomUrl(), iFrame1.getCustomTitle());
         setCurrentFrameFocus();
     }
     
