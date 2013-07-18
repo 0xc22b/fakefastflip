@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +24,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.urlfetch.HTTPHeader;
 import com.google.appengine.api.urlfetch.HTTPMethod;
 import com.google.appengine.api.urlfetch.HTTPRequest;
 import com.google.appengine.api.urlfetch.HTTPResponse;
@@ -60,8 +62,28 @@ public class RpcServiceImpl extends RemoteServiceServlet implements RpcService {
         } catch (Exception e) {
             throw new FetchUrlException(e.getClass().getName() + ": " + e.getMessage(), e.getCause());
         }
-        
-        SFFF sFFF = new SFFF(new String(res.getContent()));
+
+        // Try to get charset, default to utf-8
+        // TODO: Better way to get charset from Content-Type in response header?
+        String charset = "utf-8";
+        List<HTTPHeader> httpHeaders = res.getHeadersUncombined();
+        for (HTTPHeader httpHeader : httpHeaders) {
+            if (httpHeader.getName().equals("Content-Type")) {
+                String[] values = httpHeader.getValue().split(";");
+                for (String value : values) {
+                    if (value.toLowerCase().contains("charset")) {
+                        values = value.toLowerCase().split("=");
+                        if (values[0].trim().equals("charset")) {
+                            charset = values[1].trim();
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+        }
+
+        SFFF sFFF = new SFFF(new String(res.getContent(), Charset.forName(charset)));
         
         List<Rule> ruleList = getRuleList();
         for(Rule rule : ruleList){
